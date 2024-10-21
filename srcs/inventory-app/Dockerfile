@@ -9,7 +9,7 @@ COPY package.json tsconfig.json ./
 
 RUN npm install
 
-COPY app ./app
+COPY src ./src
 COPY server.ts ./
 
 RUN npm run build

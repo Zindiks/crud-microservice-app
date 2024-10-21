@@ -1,29 +1,28 @@
-FROM alpine:3.20 AS build
-
-RUN apk add --no-cache nodejs npm
-RUN npm install -g typescript
+# Stage 1: Build
+FROM node:18-alpine AS build
 
 WORKDIR /billing-app
 
+# Copy package files and install dependencies
 COPY package.json tsconfig.json ./
-
 RUN npm install
 
-COPY app ./app
+# Copy the source files and build
+COPY src ./src
 COPY server.ts ./
-
 RUN npm run build
 
-FROM alpine:3.20
-
-RUN apk add --no-cache nodejs npm
+# Stage 2: Run
+FROM node:18-alpine
 
 WORKDIR /billing-app
 
+# Copy the built files and dependencies
 COPY --from=build /billing-app/dist ./dist
 COPY --from=build /billing-app/node_modules ./node_modules
 COPY --from=build /billing-app/package.json ./
 
 EXPOSE $BILLING_APP_PORT
 
-CMD npm run start
+# Run the app
+CMD ["npm", "run", "start"]
