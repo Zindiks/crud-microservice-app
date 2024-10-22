@@ -19,7 +19,8 @@
     "pino-pretty": "^11.3.0",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.4",
-    "sequelize-typescript": "^2.1.6"
+    "sequelize-typescript": "^2.1.6",
+    "zod": "^3.23.8"
   },
   "description": "",
   "devDependencies": {

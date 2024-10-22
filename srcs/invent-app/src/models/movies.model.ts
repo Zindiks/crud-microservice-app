@@ -1,14 +1,15 @@
-import { Table, Column, Model, DataType } from "sequelize-typescript"
+import { Table, Column, Model, DataType, Unique } from "sequelize-typescript"
 
 interface MovieAttributes {
-    name: string
-    description: string
+  title: string
+  description: string
 }
 
 @Table
 export class Movies extends Model<MovieAttributes> {
+  @Unique
   @Column(DataType.TEXT)
-  name!: string
+  title!: string
 
   @Column
   description!: string

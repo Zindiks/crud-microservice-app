@@ -2,7 +2,7 @@
 FROM node:alpine AS builder
 
 # Set the working directory
-WORKDIR .
+WORKDIR /.
 
 # Copy package.json and package-lock.json (if exists)
 COPY package*.json ./
@@ -20,11 +20,11 @@ RUN npm run build
 FROM node:alpine
 
 # Set the working directory
-WORKDIR .
+WORKDIR /.
 
 # Copy only the necessary files from the builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
+COPY --from=builder /dist ./dist
+COPY --from=builder /package*.json ./
 
 # Install production dependencies
 RUN npm install --only=production
@@ -37,7 +37,7 @@ RUN npm install --only=production
 EXPOSE 4000
 
 # Start the application
-CMD ["node", "dist/app.js"]
+CMD ["node", "dist/index.js"]
 
 # # Start the application with PM2
 # CMD ["pm2-runtime", "dist/app.js"]
