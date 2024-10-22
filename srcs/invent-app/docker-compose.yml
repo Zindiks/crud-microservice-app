@@ -16,21 +16,21 @@ services:
     restart: unless-stopped
 
 
-  # inventory-app:
-  #   container_name: inventory-app
-  #   build: .
-  #   environment:
-  #     DB_INVENTORY_HOST: ${DB_INVENTORY_HOST}
-  #     DB_INVENTORY_PORT: ${DB_INVENTORY_PORT}
-  #     DB_INVENTORY_NAME: ${DB_INVENTORY_NAME}
-  #     DB_INVENTORY_USER: ${DB_INVENTORY_USER}
-  #     DB_INVENTORY_PASSWORD: ${DB_INVENTORY_PASSWORD}
-  #     APP_INVENTORY_PORT: ${APP_INVENTORY_PORT}
-  #   ports:
-  #     - "8081:${APP_INVENTORY_PORT}"
-  #   depends_on:
-  #     - inventory-db
-  #   command: node dist/index.js
+  inventory-app:
+    container_name: inventory-app
+    build: .
+    environment:
+      DB_INVENTORY_HOST: ${DB_INVENTORY_HOST}
+      DB_INVENTORY_PORT: ${DB_INVENTORY_PORT}
+      DB_INVENTORY_NAME: ${DB_INVENTORY_NAME}
+      DB_INVENTORY_USER: ${DB_INVENTORY_USER}
+      DB_INVENTORY_PASSWORD: ${DB_INVENTORY_PASSWORD}
+      APP_INVENTORY_PORT: ${APP_INVENTORY_PORT}
+    ports:
+      - "8081:${APP_INVENTORY_PORT}"
+    depends_on:
+      - inventory-db
+    command: node dist/index.js
     
 volumes:
   postgres:

@@ -19,7 +19,7 @@ export const getMovieById = async (req: Request, res: Response) => {
     res.status(200).json(movie)
     return
   } catch (error) {
-    console.error("Error fetching movie:", error)
+    logger.error("Error fetching movie:", error)
     res.status(500).json({ message: "Internal server error" })
     return
   }

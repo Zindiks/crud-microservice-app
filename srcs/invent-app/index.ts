@@ -1,6 +1,6 @@
 import "dotenv/config"
 import app from "./src/app"
-import { SERVICE_NAME, style } from "./src/utils/terminal-styles"
+import { SERVICE_NAME } from "./src/utils/terminal-styles"
 import { sequelize } from "./src/config/connection"
 import { logger } from "./src/utils/logger"
 
