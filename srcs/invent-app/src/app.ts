@@ -3,6 +3,7 @@ import { sequelize } from "./config/connection"
 import { SERVICE_NAME, style } from "./utils/terminal-styles"
 import cors from "cors"
 import moviesRouter from "./routes/movies.router"
+import movieRouter from "./routes/movie.router"
 import { logger, loggerHttp } from "./utils/logger"
 
 const app: Express = express()
@@ -11,6 +12,7 @@ app.use(cors())
 app.use(loggerHttp)
 
 app.use("/movies", moviesRouter)
+app.use("/movies", movieRouter)
 
 app.get("/health", async (req: Request, res: Response) => {
   try {

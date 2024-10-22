@@ -6,12 +6,10 @@ const validate = (schema: ZodSchema) => {
     const result = schema.safeParse(req.body)
 
     if (!result.success) {
-      // If validation fails, return a 400 error with the validation details
       res.status(400).json({ error: result.error.errors })
       return
     }
 
-    // If validation succeeds, replace the body with parsed data and call next()
     req.body = result.data
     next()
   }
