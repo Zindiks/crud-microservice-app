@@ -1,6 +1,8 @@
-import { Movies } from '../models/movies.model';
-import { logger } from '../utils/logger';
-import { sequelize } from '../config/connection';
+import { Movies } from "../models/movies.model"
+import { logger } from "../utils/logger"
+import { sequelize } from "../config/connection"
+
+import { green, red } from "../utils/terminal-styles"
 
 const moviesSeedData = [
   {
@@ -57,22 +59,22 @@ const moviesSeedData = [
 
 const seedMovies = async () => {
   try {
-    await sequelize.sync({ force: true }); // This will drop and recreate tables
-    await Movies.bulkCreate(moviesSeedData);
-    logger.info('Movies seed data inserted successfully');
+    await sequelize.sync({ force: true }) // This will drop and recreate tables
+    await Movies.bulkCreate(moviesSeedData)
+    logger.info(green("Movies seed data inserted successfully"))
   } catch (error) {
-    logger.error('Error seeding movies:', error);
-    throw error;
+    logger.error(red("Error seeding movies:"), error)
+    throw error
   }
-};
+}
 
 // Execute the seed function
 seedMovies()
   .then(() => {
-    logger.info('Seeding completed');
-    process.exit(0);
+    logger.info(green("Seeding completed"))
+    process.exit(0)
   })
   .catch((error) => {
-    logger.error('Seeding failed:', error);
-    process.exit(1);
-  });
+    logger.error(red("Seeding failed:"), error)
+    process.exit(1)
+  })
