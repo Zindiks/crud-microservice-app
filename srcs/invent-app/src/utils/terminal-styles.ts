@@ -1,4 +1,3 @@
-// Define the color and style codes
 const styles = {
   black: "\x1b[30m",
   red: "\x1b[31m",
@@ -17,7 +16,6 @@ const styles = {
   hidden: "\x1b[8m",
 }
 
-// Function to apply multiple styles or colors
 export const style = (
   text: string,
   appliedStyles: (keyof typeof styles)[]
@@ -26,6 +24,12 @@ export const style = (
   return `${combinedStyles}${text}${styles.reset}`
 }
 
+export const green = (message: string) => {
+  return style(message, ["green"])
+}
 
+export const red = (message: string) => {
+  return style(message, ["red"])
+}
 
-export const SERVICE_NAME = `[${style("INVENTORY", ["bold", "green"])}]`
+export const SERVICE_NAME = `${style("[INVENTORY]", ["blue", "bold"])}`

@@ -3,10 +3,6 @@ import { UniqueConstraintError } from "sequelize"
 import { logger } from "../utils/logger"
 import { Movies } from "../models/movies.model"
 
-//TODO: GET /api/movies/:id retrieve a single movie by id.
-//TODO: PUT /api/movies/:id update a single movie by id.
-//TODO: DELETE /api/movies/:id delete a single movie by id.
-
 export const getMovieById = async (req: Request, res: Response) => {
   const { id } = req.params
 

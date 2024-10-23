@@ -15,12 +15,11 @@ services:
       - "${DB_INVENTORY_PORT}:5432"
     restart: unless-stopped
 
-
   # inventory-app:
   #   container_name: inventory-app
   #   build: .
   #   environment:
-  #     DB_INVENTORY_HOST: ${DB_INVENTORY_HOST}
+  #     DB_INVENTORY_HOST: inventory-db
   #     DB_INVENTORY_PORT: ${DB_INVENTORY_PORT}
   #     DB_INVENTORY_NAME: ${DB_INVENTORY_NAME}
   #     DB_INVENTORY_USER: ${DB_INVENTORY_USER}
@@ -30,7 +29,7 @@ services:
   #     - "8081:${APP_INVENTORY_PORT}"
   #   depends_on:
   #     - inventory-db
-  #   command: node dist/index.js
+  #   command: sh -c "npm run seed && npm start"
     
 volumes:
   postgres:
