@@ -4,11 +4,20 @@ import { SERVICE_NAME, style } from "./utils/terminal-styles"
 import cors from "cors"
 import moviesRouter from "./routes/movies.router"
 import { logger, loggerHttp } from "./utils/logger"
+import swaggerUi from "swagger-ui-express"
+import { specs } from "./config/swagger"
+import helmet from "helmet"
+import { limiter } from "./middleware/rateLimiter.middleware"
 
 const app: Express = express()
 app.use(express.json())
 app.use(cors())
+app.use(limiter)
 app.use(loggerHttp)
+app.use(helmet())
+
+// Swagger UI
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs))
 
 app.use("/movies", moviesRouter)
 

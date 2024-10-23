@@ -1,6 +1,9 @@
 import { z } from "zod"
 
-export const envSchema = z.object({
+const envSchema = z.object({
+  // Environment
+  NODE_ENV: z.enum(["development", "production"]).default("development"),
+  
   // Database
   DB_INVENTORY_NAME: z.string().default("movies"),
   DB_INVENTORY_USER: z.string().default("postgres"),
