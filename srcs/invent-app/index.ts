@@ -1,25 +1,21 @@
-import "dotenv/config"
-import { validateEnv } from "./src/config/env.schema"
-import app from "./src/app"
-import { logger } from "./src/utils/logger"
-import { green, red, SERVICE_NAME } from "./src/utils/terminal-styles"
-import { sequelize } from "./src/config/connection"
-
-const env = validateEnv()
-const PORT = env.APP_INVENTORY_PORT
+import './src/config/config' // Load environment configuration first
+import app from './src/app'
+import { sequelize } from './src/config/connection'
+import { logger } from './src/utils/logger'
+import { style, SERVICE_NAME } from './src/utils/terminal-styles'
 
 const start = async () => {
   try {
-    await sequelize.sync({ force: false })
-    logger.info(SERVICE_NAME + green(" Database synced successfully."))
+    await sequelize.sync()
+    logger.info(SERVICE_NAME + style(' Database synced successfully.', ['green']))
+
+    const PORT = process.env.APP_INVENTORY_PORT || 8080
     app.listen(PORT, () => {
-      logger.info(SERVICE_NAME + green(` Service is running at port ${PORT}`))
+      logger.info(SERVICE_NAME + style(` Service is running at port ${PORT}`, ['green']))
     })
   } catch (error) {
-    logger.error(
-      SERVICE_NAME + red(" Unable to connect to the database"),
-      error
-    )
+    logger.error('Error starting server:', error)
+    process.exit(1)
   }
 }
 

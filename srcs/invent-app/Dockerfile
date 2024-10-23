@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 RUN npm run build
-RUN npm test
+RUN npm run test
 
 FROM node:alpine
 
@@ -22,4 +22,4 @@ RUN npm install --only=production
 
 EXPOSE 4000
 
-CMD ["node", "dist/index.js"]
+CMD ["node","dist/index.js" ]

@@ -29,7 +29,6 @@ services:
       - "8081:${APP_INVENTORY_PORT}"
     depends_on:
       - inventory-db
-    command: sh -c "npm run seed && npm start"
 
 volumes:
   postgres:
