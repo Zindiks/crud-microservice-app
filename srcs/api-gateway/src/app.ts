@@ -12,8 +12,10 @@ app.use(morgan("dev"))
 
 
 // Routes
-app.use("/api/billing", billingRouter)
-app.use("/api/movies", moviesRouter)
+app.use("/billing", billingRouter)
+app.use("/movies", moviesRouter)
+
+
 app.get("/", (req: Request, res: Response) => {
   res.status(200).send("[GATEWAY] is up and running")
 })

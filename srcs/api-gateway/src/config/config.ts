@@ -14,8 +14,8 @@ export const rabbitMQConfig = (): RabbitMQConfig => {
   return {
     host: process.env.RABBITMQ_HOST || "localhost",
     port: Number(process.env.RABBITMQ_PORT) || 5672,
-    username: process.env.RABBITMQ_USER || "guest",
-    password: process.env.RABBITMQ_PASSWORD || "guest",
+    username: process.env.RABBITMQ_USER || "rabbitmq",
+    password: process.env.RABBITMQ_PASSWORD || "password",
   }
 }
 

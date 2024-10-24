@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  orders-db:
+    container_name: orders-db
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_ORDER_USER}
+      POSTGRES_PASSWORD: ${DB_ORDER_PASSWORD}
+      PGDATA: /data/postgres
+      POSTGRES_DB: ${DB_ORDER_NAME}
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "${DB_ORDER_PORT}:5432"
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  orders-app:
+    container_name: orders-app
+    build: .
+    environment:
+      DB_ORDER_HOST: ${DB_ORDER_HOST}
+      DB_ORDER_PORT: ${DB_ORDER_PORT}
+      DB_ORDER_NAME: ${DB_ORDER_NAME}
+      DB_ORDER_USER: ${DB_ORDER_USER}
+      DB_ORDER_PASSWORD: ${DB_ORDER_PASSWORD}
+      APP_ORDER_PORT: ${APP_ORDER_PORT}
+    ports:
+      - "8082:${APP_ORDER_PORT}"
+    depends_on:
+      - orders-db
+
+volumes:
+  postgres:

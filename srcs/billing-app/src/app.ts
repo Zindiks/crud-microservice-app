@@ -2,12 +2,13 @@ import express, { Express, Request, Response } from "express"
 import { sequelize } from "./config/connection"
 import { SERVICE_NAME, style } from "./utils/terminal-styles"
 import cors from "cors"
-import moviesRouter from "./routes/movies.router"
+// import moviesRouter from "./routes/movies.router"
 import { logger, loggerHttp } from "./utils/logger"
-import swaggerUi from "swagger-ui-express"
-import { specs } from "./config/swagger"
+// import swaggerUi from "swagger-ui-express"
+// import { specs } from "./config/swagger"
 import helmet from "helmet"
 import { limiter } from "./middleware/rateLimiter.middleware"
+import billingRouter from "../src/routes/orders.route"
 
 const app: Express = express()
 app.use(express.json())
@@ -16,10 +17,12 @@ app.use(limiter)
 app.use(loggerHttp)
 app.use(helmet())
 
-// Swagger UI
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs))
 
-app.use("/movies", moviesRouter)
+
+// Swagger UI
+// app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs))
+
+app.use("/billing", billingRouter)
 
 app.get("/health", async (req: Request, res: Response) => {
   try {

@@ -1,6 +1,6 @@
 import app from "./src/app"
 
-const PORT = process.env.API_GATEWAY_PORT
+const PORT = process.env.API_GATEWAY_PORT || 3000
 
 const start = () => {
   app.listen(PORT, () => {

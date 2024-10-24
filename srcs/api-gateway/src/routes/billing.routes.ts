@@ -1,10 +1,9 @@
-import { Router, Request, Response } from "express";
-import { moviesProxyMiddleware, ordersProxyMiddleware } from "../proxy";
-import { Publish } from "../models/rabbitmq";
-
+import { Router,Request,Response } from "express"
+import { moviesProxyMiddleware, ordersProxyMiddleware } from "../proxy"
+import { Publish } from "../models/rabbitmq"
 
 const router = Router()
-const publish = new Publish
+const publish = new Publish()
 
 router.post('/', async(req:Request, res:Response)=>{
     try{
@@ -15,10 +14,9 @@ router.post('/', async(req:Request, res:Response)=>{
     }
 })
 
-router.get('/', ordersProxyMiddleware)
-
-
-
-
+router.all("/",ordersProxyMiddleware)
+router.all("/*", ordersProxyMiddleware)
 
 export default router
+
+

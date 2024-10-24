@@ -1,28 +1,25 @@
-# Stage 1: Build
-FROM node:18-alpine AS build
+FROM node:alpine AS builder
 
-WORKDIR /billing-app
+WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package.json tsconfig.json ./
+COPY package*.json ./
+
 RUN npm install
 
-# Copy the source files and build
-COPY src ./src
-COPY server.ts ./
+COPY . .
 RUN npm run build
+RUN npm run test
 
-# Stage 2: Run
-FROM node:18-alpine
+FROM node:alpine
 
-WORKDIR /billing-app
+WORKDIR /app
 
-# Copy the built files and dependencies
-COPY --from=build /billing-app/dist ./dist
-COPY --from=build /billing-app/node_modules ./node_modules
-COPY --from=build /billing-app/package.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+# COPY --from=builder /app/src/seeds ./src/seeds
 
-EXPOSE $BILLING_APP_PORT
+RUN npm install --only=production
 
-# Run the app
-CMD ["npm", "run", "start"]
+EXPOSE 4000
+
+CMD ["node","dist/index.js" ]
