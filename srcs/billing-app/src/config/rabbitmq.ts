@@ -13,8 +13,8 @@ export const rabbitmqConn = async () => {
     const connection: Connection = await client.connect({
       username,
       password,
-      port,
       hostname,
+      port: port
     })
 
     const channel: Channel = await connection.createChannel()
@@ -38,7 +38,7 @@ export const rabbitmqConn = async () => {
     logger.info(RABBITMQ_TAG + `: waiting for messages in ${QUEUE}`)
   } catch (error) {
     logger.error(
-      RABBITMQ_TAG + red(`: failed to connect to RabbitMQ. ${error}`)
+      RABBITMQ_TAG + red(`: connection failed. ${error}`)
     )
   }
 }

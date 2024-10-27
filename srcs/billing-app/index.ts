@@ -5,11 +5,14 @@ import { logger } from "./src/utils/logger"
 import { style, SERVICE_NAME } from "./src/utils/terminal-styles"
 import { rabbitmqConn } from "./src/config/rabbitmq"
 
-const PORT = process.env.APP_ORDER_PORT || 8080
+const PORT = process.env.APP_ORDER_INTERNAL_PORT || 8080
+
+
 
 const start = async () => {
   try {
-    await sequelize.sync()
+     await sequelize.sync()
+
     logger.info(
       SERVICE_NAME + style(" Database synced successfully.", ["green"])
     )

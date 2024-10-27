@@ -38,7 +38,7 @@ app.get("/health", async (req: Request, res: Response) => {
     logger.error(SERVICE_NAME + `Unable to connect to the database:`, error)
   }
 
-  res.status(200).json({ status: "OK" })
+  res.status(200).json({ status: "OK", service: "billing-app"})
 })
 ;async () => {
   await sequelize.sync()

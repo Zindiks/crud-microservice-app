@@ -83,7 +83,7 @@ describe("rabbitmqConn", () => {
     await rabbitmqConn()
 
     expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining("failed to connect to RabbitMQ")
+      expect.stringContaining("connection failed.")
     )
   })
 })

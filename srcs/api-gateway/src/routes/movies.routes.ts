@@ -1,6 +1,5 @@
-import { Router} from "express"
-import { moviesProxyMiddleware} from "../proxy"
-
+import { Router } from "express"
+import { moviesProxyMiddleware } from "./proxy"
 
 const router = Router()
 router.all("/", moviesProxyMiddleware)

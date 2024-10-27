@@ -3,12 +3,19 @@ import config from "./config"
 import {Orders} from "../models/orders.models"
 
 
+
+const {name,user,password,host,port} = config.db
+
+
+
 export const sequelize = new Sequelize({
   models: [Orders],
   dialect: "postgres",
-  database: config.db.name,
-  username: config.db.user,
-  password: config.db.password,
-  host: config.db.host,
-  port: +config.db.port,
+  database: name,
+  username: user,
+  password: password,
+  host: host,
+  port: Number(port),
 })
+
+console.log(sequelize)

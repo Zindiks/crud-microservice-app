@@ -16,8 +16,8 @@ services:
     restart: unless-stopped
 
   rabbitmq:
-    image: rabbitmq:management
     container_name: rabbitmq
+    image: rabbitmq:management
     environment:
       - RABBITMQ_DEFAULT_USER=${RMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
@@ -29,16 +29,23 @@ services:
     container_name: orders-app
     build: .
     environment:
+      NODE_ENV: ${NODE_ENV}
       DB_ORDER_HOST: ${DB_ORDER_HOST}
       DB_ORDER_PORT: ${DB_ORDER_PORT}
       DB_ORDER_NAME: ${DB_ORDER_NAME}
       DB_ORDER_USER: ${DB_ORDER_USER}
       DB_ORDER_PASSWORD: ${DB_ORDER_PASSWORD}
-      APP_ORDER_PORT: ${APP_ORDER_PORT}
+      RMQ_USER: ${RMQ_USER}
+      RMQ_PASSWORD: ${RMQ_PASSWORD}
+      RMQ_HOST: ${RMQ_HOST}
+      RMQ_PORT: ${RMQ_PORT}
+      APP_ORDER_INTERNAL_PORT: ${APP_ORDER_INTERNAL_PORT}
+      APP_ORDER_EXTERNAL_PORT: ${APP_ORDER_EXTERNAL_PORT}
     ports:
-      - "8082:${APP_ORDER_PORT}"
+      - "${APP_ORDER_EXTERNAL_PORT}:${APP_ORDER_INTERNAL_PORT}"
     depends_on:
       - orders-db
+      - rabbitmq
 
 volumes:
   postgres:

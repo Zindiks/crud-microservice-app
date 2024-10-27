@@ -1,110 +1,119 @@
+version: "3.9"
+
 services:
-  gateway-app:
-    build: ./srcs/api-gateway
-    restart: always
+  orders-db:
+    container_name: orders-db
+    image: postgres
     environment:
-      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
-      INVENTORY_APP_PORT: ${INVENTORY_APP_PORT}
-      INVENTORY_APP_HOST: inventory-app
-      BILLING_APP_PORT: ${BILLING_APP_PORT}
-      BILLING_APP_HOST: billing-app
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      POSTGRES_USER: ${DB_ORDER_USER}
+      POSTGRES_PASSWORD: ${DB_ORDER_PASSWORD}
+      PGDATA: /data/postgres
+      POSTGRES_DB: ${DB_ORDER_NAME}
+    volumes:
+      - postgres_orders:/data/postgres
     ports:
-      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
-    volumes:
-      - api-gateway-logs:/logs
-
-  inventory-app:
-    build:
-      context: ./srcs/inventory-app
-      dockerfile: Dockerfile
-    restart: always
-    environment:
-      INVENTORY_DB_HOST: inventory-db
-      INVENTORY_DB_USER: ${INVENTORY_DB_USER}
-      INVENTORY_DB_PASSWORD: ${INVENTORY_DB_PASSWORD}
-      INVENTORY_DB_NAME: ${INVENTORY_DB_NAME}
-      INVENTORY_APP_PORT: ${INVENTORY_APP_PORT}
-    depends_on:
-      inventory-db:
-        condition: service_healthy
-
-  inventory-db:
-    build:
-      context: .
-      dockerfile: db.Dockerfile
-    restart: always
-    volumes:
-      - inventory-db-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${INVENTORY_DB_USER}
-      POSTGRES_PASSWORD: ${INVENTORY_DB_PASSWORD}
-      POSTGRES_DB: ${INVENTORY_DB_NAME}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${INVENTORY_DB_USER}", "-d", "${INVENTORY_DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  billing-app:
-    build: ./srcs/billing-app
-    restart: always
-    environment:
-      BILLING_DB_HOST: billing-db
-      BILLING_DB_USER: ${BILLING_DB_USER}
-      BILLING_DB_PASSWORD: ${BILLING_DB_PASSWORD}
-      BILLING_DB_NAME: ${BILLING_DB_NAME}
-      BILLING_APP_PORT: ${BILLING_APP_PORT}
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      billing-db:
-        condition: service_healthy
-
-  billing-db:
-    build:
-      context: .
-      dockerfile: db.Dockerfile
-    restart: always
-    volumes:
-      - billing-db-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${BILLING_DB_USER}
-      POSTGRES_PASSWORD: ${BILLING_DB_PASSWORD}
-      POSTGRES_DB: ${BILLING_DB_NAME}
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${BILLING_DB_USER}", "-d", "${BILLING_DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - "${DB_ORDER_PORT}:5432"
+    restart: unless-stopped
 
   rabbitmq:
-    restart: always
-    build:
-      context: .
-      dockerfile: rabbitmq.Dockerfile
+    container_name: rabbitmq
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
     healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
+      start_period: 15s
+
+  orders-app:
+    container_name: orders-app
+    build: ./srcs/billing-app
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_ORDER_HOST: ${DB_ORDER_HOST}
+      DB_ORDER_PORT: ${DB_ORDER_PORT}
+      DB_ORDER_NAME: ${DB_ORDER_NAME}
+      DB_ORDER_USER: ${DB_ORDER_USER}
+      DB_ORDER_PASSWORD: ${DB_ORDER_PASSWORD}
+      RMQ_USER: ${RMQ_USER}
+      RMQ_PASSWORD: ${RMQ_PASSWORD}
+      RMQ_HOST: ${RMQ_HOST}
+      RMQ_PORT: ${RMQ_PORT}
+      APP_ORDER_HOST: ${APP_ORDER_HOST}
+      APP_ORDER_INTERNAL_PORT: ${APP_ORDER_INTERNAL_PORT}
+      APP_ORDER_EXTERNAL_PORT: ${APP_ORDER_EXTERNAL_PORT}
+    ports:
+      - "${APP_ORDER_EXTERNAL_PORT}:${APP_ORDER_INTERNAL_PORT}"
+      - rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      orders-db:
+        condition: service_started
+    restart: unless-stopped
+  
+
+  inventory-db:
+    container_name: inventory-db
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_INVENTORY_USER}
+      POSTGRES_PASSWORD: ${DB_INVENTORY_PASSWORD}
+      PGDATA: /data/postgres
+      POSTGRES_DB: ${DB_INVENTORY_NAME}
+    volumes:
+      - postgres-inventory:/data/postgres
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+
+  inventory-app:
+    container_name: inventory-app
+    build: ./srcs/inventory-app
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_INVENTORY_HOST: ${DB_INVENTORY_HOST}
+      DB_INVENTORY_PORT: ${DB_INVENTORY_PORT}
+      DB_INVENTORY_NAME: ${DB_INVENTORY_NAME}
+      DB_INVENTORY_USER: ${DB_INVENTORY_USER}
+      DB_INVENTORY_PASSWORD: ${DB_INVENTORY_PASSWORD}
+      APP_INVENTORY_HOST: ${APP_INVENTORY_HOST}
+      APP_INVENTORY_INTERNAL_PORT: ${APP_INVENTORY_INTERNAL_PORT}
+      APP_INVENTORY_EXTERNAL_PORT: ${APP_INVENTORY_EXTERNAL_PORT}
+    ports:
+      - "${APP_INVENTORY_EXTERNAL_PORT}:${APP_INVENTORY_INTERNAL_PORT}"
+    depends_on:
+      - inventory-db
+
+  api-gateway:
+    container_name: api-gateway
+    build: ./srcs/api-gateway
+    # env_file:
+    #   - .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      APP_GATEWAY_PORT: ${APP_GATEWAY_PORT}
+      APP_GATEWAY_HOST: ${APP_GATEWAY_HOST}
+      APP_ORDER_HOST: ${APP_ORDER_HOST}
+      APP_ORDER_INTERNAL_PORT: ${APP_ORDER_INTERNAL_PORT}
+      APP_INVENTORY_HOST: ${APP_INVENTORY_HOST}
+      APP_INVENTORY_INTERNAL_PORT: ${APP_INVENTORY_INTERNAL_PORT}
+      RMQ_USER: ${RMQ_USER}
+      RMQ_PASSWORD: ${RMQ_PASSWORD}
+      RMQ_HOST: ${RMQ_HOST}
+      RMQ_PORT: ${RMQ_PORT}
+
+    ports:
+      - "${APP_GATEWAY_PORT}:${APP_GATEWAY_PORT}"
+    depends_on:
+      - inventory-db
 
 volumes:
-  inventory-db-data:
-  billing-db-data:
-  api-gateway-logs:
-
+  postgres_orders:
+  postgres-inventory:
