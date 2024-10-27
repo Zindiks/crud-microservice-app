@@ -2,22 +2,23 @@ import dotenv from "dotenv"
 import { logger } from "../utils/logger"
 import { SERVICE_NAME } from "../utils/terminal-styles"
 
-// Prevent dotenv from loading .env automatically
-const options = { path: undefined }
-
-// Load environment variables based on NODE_ENV
-if (process.env.NODE_ENV === "production") {
-  logger.info(SERVICE_NAME + " Loading production environment")
-  dotenv.config({ ...options, path: ".env" })
+logger.info(SERVICE_NAME)
+// Then check NODE_ENV and load additional environment if needed
+if (process.env.NODE_ENV === "development") {
+  logger.info("Loading development environment")
+  dotenv.config({ path: ".env.dev" })
 } else {
-  logger.info(SERVICE_NAME + " Loading development environment")
-  dotenv.config({ ...options, path: ".env.dev" })
+  logger.info("Loading production environment")
+  dotenv.config({ path: ".env" })
 }
 
 // Log the loaded configuration
-logger.info(SERVICE_NAME + ` Environment: ${process.env.NODE_ENV}`)
-logger.info(SERVICE_NAME + ` DB Host: ${process.env.DB_INVENTORY_HOST}`)
-logger.info(SERVICE_NAME + ` App Port: ${process.env.APP_INVENTORY_PORT}`)
+logger.info(
+  `DB URL: http://${process.env.DB_INVENTORY_HOST}:${process.env.DB_INVENTORY_PORT}`
+)
+logger.info(
+  `App Port: http://${process.env.APP_INVENTORY_HOST}:${process.env.APP_INVENTORY_INTERNAL_PORT}`
+)
 
 export default {
   db: {

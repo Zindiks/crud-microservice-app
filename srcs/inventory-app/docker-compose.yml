@@ -12,21 +12,23 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "${DB_INVENTORY_PORT}:5432"
+      - "${DB_INVENTORY_PORT}:${DB_INVENTORY_PORT}"
     restart: unless-stopped
 
   inventory-app:
     container_name: inventory-app
     build: .
     environment:
-      DB_INVENTORY_HOST: inventory-db
+      NODE_ENV: ${NODE_ENV}
+      DB_INVENTORY_HOST: ${DB_INVENTORY_HOST}
       DB_INVENTORY_PORT: ${DB_INVENTORY_PORT}
       DB_INVENTORY_NAME: ${DB_INVENTORY_NAME}
       DB_INVENTORY_USER: ${DB_INVENTORY_USER}
       DB_INVENTORY_PASSWORD: ${DB_INVENTORY_PASSWORD}
-      APP_INVENTORY_PORT: ${APP_INVENTORY_PORT}
+      APP_INVENTORY_INTERNAL_PORT: ${APP_INVENTORY_INTERNAL_PORT}
+      APP_INVENTORY_EXTERNAL_PORT: ${APP_INVENTORY_EXTERNAL_PORT}
     ports:
-      - "8081:${APP_INVENTORY_PORT}"
+      - "${APP_INVENTORY_EXTERNAL_PORT}:${APP_INVENTORY_INTERNAL_PORT}"
     depends_on:
       - inventory-db
 

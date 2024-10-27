@@ -36,9 +36,9 @@ app.get("/health", async (req: Request, res: Response) => {
     )
   }
 
-  res.status(200).json({ status: "OK" })
+  res.status(200).json({ status: "OK", service: "inventory-app" })
 })
-;async () => {
-  await sequelize.sync()
-}
+// ;async () => {
+//   await sequelize.sync()
+// }
 export default app
