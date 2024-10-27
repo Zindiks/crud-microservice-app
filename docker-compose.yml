@@ -50,7 +50,6 @@ services:
       APP_ORDER_EXTERNAL_PORT: ${APP_ORDER_EXTERNAL_PORT}
     ports:
       - "${APP_ORDER_EXTERNAL_PORT}:${APP_ORDER_INTERNAL_PORT}"
-      - rabbitmq
     depends_on:
       rabbitmq:
         condition: service_healthy
