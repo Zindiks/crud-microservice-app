@@ -1,12 +1,8 @@
-import { Sequelize } from "sequelize-typescript"
-import config from "./config"
-import {Orders} from "../models/orders.models"
+import { Sequelize } from "sequelize-typescript";
+import config from "./config";
+import { Orders } from "../models/orders.models";
 
-
-
-const {name,user,password,host,port} = config.db
-
-
+const { name, user, password, host, port } = config.db;
 
 export const sequelize = new Sequelize({
   models: [Orders],
@@ -16,6 +12,4 @@ export const sequelize = new Sequelize({
   password: password,
   host: host,
   port: Number(port),
-})
-
-console.log(sequelize)
+});

@@ -1,1 +1,1 @@
-The Advanced Message Queuing Protocol (AMQP) 
+The Advanced Message Queuing Protocol (AMQP)

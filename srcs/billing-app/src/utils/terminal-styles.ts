@@ -4,7 +4,6 @@ const styles = {
   yellow: "\x1b[33m",
   reset: "\x1b[0m",
 
-
   black: "\x1b[30m",
   blue: "\x1b[34m",
   magenta: "\x1b[35m",
@@ -16,23 +15,23 @@ const styles = {
   blink: "\x1b[5m",
   reverse: "\x1b[7m",
   hidden: "\x1b[8m",
-}
+};
 
 export const style = (
   text: string,
-  appliedStyles: (keyof typeof styles)[]
+  appliedStyles: (keyof typeof styles)[],
 ): string => {
-  const combinedStyles = appliedStyles.map((style) => styles[style]).join("")
-  return `${combinedStyles}${text}${styles.reset}`
-}
+  const combinedStyles = appliedStyles.map((style) => styles[style]).join("");
+  return `${combinedStyles}${text}${styles.reset}`;
+};
 
 export const green = (message: string) => {
-  return style(message, ["green"])
-}
+  return style(message, ["green"]);
+};
 
 export const red = (message: string) => {
-  return style(message, ["red"])
-}
+  return style(message, ["red"]);
+};
 
-export const SERVICE_NAME = `${style("[ORDERS]", ["yellow", "bold"])}`
-export const RABBITMQ_TAG = `${style("[RabbitMQ]", ["bold", "magenta"])}`
+export const SERVICE_NAME = `${style("[ORDERS]", ["yellow", "bold"])}`;
+export const RABBITMQ_TAG = `${style("[RabbitMQ]", ["bold", "magenta"])}`;

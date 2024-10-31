@@ -1,5 +1,5 @@
-import pino from "pino"
-import pinoHttp from "pino-http"
+import pino from "pino";
+import pinoHttp from "pino-http";
 
 export const logger = pino({
   transport: {
@@ -8,7 +8,7 @@ export const logger = pino({
       colorize: true,
     },
   },
-})
+});
 
 export const loggerHttp = pinoHttp({
   transport: {
@@ -17,4 +17,4 @@ export const loggerHttp = pinoHttp({
       colorize: true,
     },
   },
-})
+});

@@ -5,12 +5,12 @@ import {
   loggerPlugin,
   errorResponsePlugin,
   proxyEventsPlugin,
-} from "http-proxy-middleware"
+} from "http-proxy-middleware";
 
-import { appsConfig } from "../config/config"
+import { appsConfig } from "../config/config";
 
 const { inventory_host, inventory_port, billing_host, billing_port } =
-  appsConfig()
+  appsConfig();
 
 export const moviesProxyMiddleware = createProxyMiddleware({
   target: `http://${inventory_host}:${inventory_port}`,
@@ -25,7 +25,7 @@ export const moviesProxyMiddleware = createProxyMiddleware({
     errorResponsePlugin,
     proxyEventsPlugin,
   ],
-})
+});
 
 export const ordersProxyMiddleware = createProxyMiddleware({
   target: `http://${billing_host}:${billing_port}`,
@@ -40,4 +40,4 @@ export const ordersProxyMiddleware = createProxyMiddleware({
     errorResponsePlugin,
     proxyEventsPlugin,
   ],
-})
+});

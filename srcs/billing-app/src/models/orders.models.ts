@@ -1,10 +1,10 @@
-import { Table, Column, Model, DataType, Unique } from "sequelize-typescript"
+import { Table, Column, Model, DataType, Unique } from "sequelize-typescript";
 
 interface OrdersAttributes {
-  id?: number
-  user_id: number
-  number_of_items: number
-  total_amount: number
+  id?: number;
+  user_id: number;
+  number_of_items: number;
+  total_amount: number;
 }
 
 @Table
@@ -13,17 +13,17 @@ export class Orders extends Model<OrdersAttributes> {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  user_id!: number
+  user_id!: number;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  number_of_items!: number
+  number_of_items!: number;
 
   @Column({
     type: DataType.FLOAT,
     allowNull: false,
   })
-  total_amount!: number
+  total_amount!: number;
 }

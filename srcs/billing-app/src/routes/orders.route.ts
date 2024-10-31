@@ -1,6 +1,6 @@
-import Router from "express"
-import { getOrders } from "../controllers/order.controller"
+import Router from "express";
+import { getOrders } from "../controllers/order.controller";
 
-const router = Router()
-router.get("/", getOrders)
-export default router
+const router = Router();
+router.get("/", getOrders);
+export default router;

@@ -1,20 +1,23 @@
-import { Router } from "express"
+import { Router } from "express";
 import {
   addMovie,
   deleteMovies,
   getMovies,
-} from "../controllers/movies.controller"
-import { createMovieSchema, responseMovieSchema } from "../models/movies.schema"
+} from "../controllers/movies.controller";
+import {
+  createMovieSchema,
+  responseMovieSchema,
+} from "../models/movies.schema";
 
 import {
   deleteMoviesById,
   getMovieById,
   updateMovieById,
-} from "../controllers/movie.controller"
+} from "../controllers/movie.controller";
 
-import validate from "../middleware/validation.middleware"
+import validate from "../middleware/validation.middleware";
 
-const router = Router()
+const router = Router();
 
 /**
  * @swagger
@@ -85,9 +88,9 @@ const router = Router()
  *       204:
  *         description: All movies deleted
  */
-router.get("/", getMovies)
-router.post("/", validate(createMovieSchema), addMovie)
-router.delete("/", deleteMovies)
+router.get("/", getMovies);
+router.post("/", validate(createMovieSchema), addMovie);
+router.delete("/", deleteMovies);
 
 /**
  * @swagger
@@ -150,8 +153,8 @@ router.delete("/", deleteMovies)
  *       404:
  *         description: Movie not found
  */
-router.get("/:id", getMovieById)
-router.put("/:id", updateMovieById)
-router.delete("/:id", deleteMoviesById)
+router.get("/:id", getMovieById);
+router.put("/:id", updateMovieById);
+router.delete("/:id", deleteMoviesById);
 
-export default router
+export default router;

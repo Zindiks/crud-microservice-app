@@ -1,38 +1,71 @@
 version: "3.9"
 
 services:
-  orders-db:
-    container_name: orders-db
-    image: postgres
-    environment:
-      POSTGRES_USER: ${DB_ORDER_USER}
-      POSTGRES_PASSWORD: ${DB_ORDER_PASSWORD}
-      PGDATA: /data/postgres
-      POSTGRES_DB: ${DB_ORDER_NAME}
+  billing-db:
+    container_name: billing-db
+    build:
+      context: .
+      dockerfile: srcs/postgres/Dockerfile
+    restart: always
     volumes:
-      - postgres_orders:/data/postgres
+      - postgres-billing:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_ORDER_NAME}
+      POSTGRES_PASSWORD: ${DB_ORDER_PASSWORD}
+      POSTGRES_DB: ${DB_ORDER_NAME}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "${DB_ORDER_NAME}",
+          "-d",
+          "${DB_ORDER_NAME}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     ports:
-      - "${DB_ORDER_PORT}:5432"
-    restart: unless-stopped
+      - "5432:5432"
 
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:management
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
+    restart: always
+    build:
+      context: .
+      dockerfile: srcs/rabbitmq/Dockerfile
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+      RABBITMQ_PORT: ${RMQ_PORT}
+      RABBITMQ_USER: ${RMQ_USER}
+      RABBITMQ_PASSWORD: ${RMQ_PASSWORD}
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      test: ["CMD", "rabbitmqctl", "status"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 15s
+      retries: 3
 
-  orders-app:
-    container_name: orders-app
+  # rabbitmq:
+  #   container_name: rabbitmq
+  #   image: rabbitmq:management
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=${RMQ_USER}
+  #     - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   healthcheck:
+  #     test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 15s
+
+  billing-app:
+    container_name: billing-app
     build: ./srcs/billing-app
     environment:
       NODE_ENV: ${NODE_ENV}
@@ -53,24 +86,37 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-      orders-db:
-        condition: service_started
+      billing-db:
+        condition: service_healthy
     restart: unless-stopped
-  
 
   inventory-db:
     container_name: inventory-db
-    image: postgres
+    ports:
+      - "5433:5432"
+    build:
+      context: .
+      dockerfile: srcs/postgres/Dockerfile
+    restart: always
+    volumes:
+      - postgres-inventory:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_INVENTORY_USER}
       POSTGRES_PASSWORD: ${DB_INVENTORY_PASSWORD}
-      PGDATA: /data/postgres
       POSTGRES_DB: ${DB_INVENTORY_NAME}
-    volumes:
-      - postgres-inventory:/data/postgres
-    ports:
-      - "5433:5432"
-    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "${DB_INVENTORY_USER}",
+          "-d",
+          "${DB_INVENTORY_NAME}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   inventory-app:
     container_name: inventory-app
@@ -88,7 +134,9 @@ services:
     ports:
       - "${APP_INVENTORY_EXTERNAL_PORT}:${APP_INVENTORY_INTERNAL_PORT}"
     depends_on:
-      - inventory-db
+      inventory-db:
+        condition: service_healthy
+    restart: always
 
   api-gateway:
     container_name: api-gateway
@@ -107,12 +155,9 @@ services:
       RMQ_PASSWORD: ${RMQ_PASSWORD}
       RMQ_HOST: ${RMQ_HOST}
       RMQ_PORT: ${RMQ_PORT}
-
     ports:
       - "${APP_GATEWAY_PORT}:${APP_GATEWAY_PORT}"
-    depends_on:
-      - inventory-db
 
 volumes:
-  postgres_orders:
+  postgres-billing:
   postgres-inventory:

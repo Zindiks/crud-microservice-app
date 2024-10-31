@@ -14,22 +14,22 @@ const styles = {
   blink: "\x1b[5m",
   reverse: "\x1b[7m",
   hidden: "\x1b[8m",
-}
+};
 
 export const style = (
   text: string,
-  appliedStyles: (keyof typeof styles)[]
+  appliedStyles: (keyof typeof styles)[],
 ): string => {
-  const combinedStyles = appliedStyles.map((style) => styles[style]).join("")
-  return `${combinedStyles}${text}${styles.reset}`
-}
+  const combinedStyles = appliedStyles.map((style) => styles[style]).join("");
+  return `${combinedStyles}${text}${styles.reset}`;
+};
 
 export const green = (message: string) => {
-  return style(message, ["green"])
-}
+  return style(message, ["green"]);
+};
 
 export const red = (message: string) => {
-  return style(message, ["red"])
-}
+  return style(message, ["red"]);
+};
 
-export const SERVICE_NAME = `${style("[INVENTORY]", ["blue", "bold"])}`
+export const SERVICE_NAME = `${style("[INVENTORY]", ["blue", "bold"])}`;

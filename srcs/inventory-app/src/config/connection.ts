@@ -1,6 +1,6 @@
-import { Sequelize } from "sequelize-typescript"
-import config from "./config"
-import { Movies } from "../models/movies.model"
+import { Sequelize } from "sequelize-typescript";
+import config from "./config";
+import { Movies } from "../models/movies.model";
 
 export const sequelize = new Sequelize({
   models: [Movies],
@@ -10,4 +10,4 @@ export const sequelize = new Sequelize({
   password: config.db.password,
   host: config.db.host,
   port: +config.db.port,
-})
+});
