@@ -19,7 +19,9 @@ sudo chmod +x /usr/local/bin/docker-compose
 mkdir -p /home/vagrant/docker-setup
 cd /home/vagrant/docker-setup
 
+
 # Copy docker-compose.yml and .env files from shared folder
+cp -r /path/to/shared/srcs . # Copy the whole srcs folder
 cp docker-compose.yml .
 cp .env* .  # This will copy any env files like .env, .env.dev, etc.
 
