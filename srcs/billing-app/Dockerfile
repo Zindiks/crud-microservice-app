@@ -1,29 +1,24 @@
-FROM alpine:3.20 AS build
+FROM node:alpine AS builder
 
-RUN apk add --no-cache nodejs npm
-RUN npm install -g typescript
+WORKDIR /app
 
-WORKDIR /billing-app
-
-COPY package.json tsconfig.json ./
+COPY package*.json ./
 
 RUN npm install
 
-COPY app ./app
-COPY server.ts ./
-
+COPY . .
 RUN npm run build
+RUN npm run test
 
-FROM alpine:3.20
+FROM node:alpine
 
-RUN apk add --no-cache nodejs npm
+WORKDIR /app
 
-WORKDIR /billing-app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+# COPY --from=builder /app/src/seeds ./src/seeds
 
-COPY --from=build /billing-app/dist ./dist
-COPY --from=build /billing-app/node_modules ./node_modules
-COPY --from=build /billing-app/package.json ./
+RUN npm install --only=production
 
-EXPOSE $BILLING_APP_PORT
 
-CMD npm run start
+CMD ["node","dist/index.js" ]

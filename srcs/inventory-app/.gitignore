@@ -1,6 +1,8 @@
 /node_modules/
 .env
+.env.dev
 /dist/
 /data/
 .idea/
 ./DS_Store/
+

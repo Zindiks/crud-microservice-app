@@ -1,71 +1,42 @@
-export interface BillingServiceConfig {
-  port: string
-  host: string
+import dotenv from "dotenv";
+import { logger } from "../utils/logger";
+import { SERVICE_NAME } from "../utils/terminal-styles";
+
+logger.info(SERVICE_NAME);
+// Then check NODE_ENV and load additional environment if needed
+if (process.env.NODE_ENV === "development") {
+  logger.info("Loading development environment");
+  dotenv.config({ path: ".env.dev" });
+} else {
+  logger.info("Loading production environment");
+  dotenv.config({ path: ".env" });
 }
 
-export interface PostgresConfig {
-  database: string
-  username: string
-  password: string
-  host: string
-  port: number
-}
+// Log the loaded configuration
+logger.info(
+  `DB URL: http://${process.env.DB_ORDER_HOST}:${process.env.DB_ORDER_PORT}`,
+);
+logger.info(
+  `RabbitMQ URL: http://${process.env.RMQ_HOST}:${process.env.RMQ_PORT}`,
+);
+logger.info(
+  `App Port: http://${process.env.APP_ORDER_HOST}:${process.env.APP_ORDER_INTERNAL_PORT}`,
+);
 
-export interface RabbitMQConfig {
-  host: string
-  port: number
-  username: string
-  password: string
-}
+const port = Number(process.env.RMQ_PORT);
 
-export const serviceConfig = (): BillingServiceConfig => {
-  if (!process.env.BILLING_APP_PORT) {
-    throw new Error("BILLING_APP_PORT is not defined")
-  }
-
-  return {
-    port: process.env.BILLING_APP_PORT,
-    host: process.env.BILLING_APP_HOST || "localhost",
-  }
-}
-
-export const postgresConfig = (): PostgresConfig => {
-  if (!process.env.BILLING_DB_NAME) {
-    throw new Error("POSTGRES_NAME is not defined")
-  }
-
-  if (!process.env.BILLING_DB_USER) {
-    throw new Error("POSTGRES_USER is not defined")
-  }
-
-  if (!process.env.BILLING_DB_PASSWORD) {
-    throw new Error("POSTGRES_PASSWORD is not defined")
-  }
-
-  return {
-    database: process.env.BILLING_DB_NAME,
-    username: process.env.BILLING_DB_USER,
-    password: process.env.BILLING_DB_PASSWORD,
-    host: process.env.BILLING_DB_HOST || "localhost",
-    port: Number(process.env.BILLING_DB_PORT) || 5432,
-  }
-}
-
-export const rabbitmqConfig = (): RabbitMQConfig => {
-  if (!process.env.RABBITMQ_PORT) {
-    throw new Error("RABBITMQ_PORT is not defined")
-  }
-  if (!process.env.RABBITMQ_USER) {
-    throw new Error("RABBITMQ_USER is not defined")
-  }
-  if (!process.env.RABBITMQ_PASSWORD) {
-    throw new Error("RABBITMQ_PASSWORD is not defined")
-  }
-
-  return {
-    host: process.env.RABBITMQ_HOST || "localhost",
-    port: Number(process.env.RABBITMQ_PORT),
-    username: process.env.RABBITMQ_USER,
-    password: process.env.RABBITMQ_PASSWORD,
-  }
-}
+export default {
+  db: {
+    name: process.env.DB_ORDER_NAME || "orders",
+    user: process.env.DB_ORDER_USER || "postgres",
+    password: process.env.DB_ORDER_PASSWORD || "password",
+    host: process.env.DB_ORDER_HOST || "localhost",
+    port: process.env.DB_ORDER_PORT || "5433",
+  },
+  rabbitmq: {
+    username: process.env.RMQ_USER || "rabbitmq",
+    password: process.env.RMQ_PASSWORD || "password",
+    hostname: process.env.RMQ_HOST || "localhost",
+    port: port || 5672,
+  },
+};

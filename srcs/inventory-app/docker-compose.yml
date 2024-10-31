@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  inventory-db:
+    container_name: inventory-db
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_INVENTORY_USER}
+      POSTGRES_PASSWORD: ${DB_INVENTORY_PASSWORD}
+      PGDATA: /data/postgres
+      POSTGRES_DB: ${DB_INVENTORY_NAME}
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "${DB_INVENTORY_PORT}:${DB_INVENTORY_PORT}"
+    restart: unless-stopped
+
+  inventory-app:
+    container_name: inventory-app
+    build: .
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_INVENTORY_HOST: ${DB_INVENTORY_HOST}
+      DB_INVENTORY_PORT: ${DB_INVENTORY_PORT}
+      DB_INVENTORY_NAME: ${DB_INVENTORY_NAME}
+      DB_INVENTORY_USER: ${DB_INVENTORY_USER}
+      DB_INVENTORY_PASSWORD: ${DB_INVENTORY_PASSWORD}
+      APP_INVENTORY_INTERNAL_PORT: ${APP_INVENTORY_INTERNAL_PORT}
+      APP_INVENTORY_EXTERNAL_PORT: ${APP_INVENTORY_EXTERNAL_PORT}
+    ports:
+      - "${APP_INVENTORY_EXTERNAL_PORT}:${APP_INVENTORY_INTERNAL_PORT}"
+    depends_on:
+      - inventory-db
+
+volumes:
+  postgres:

@@ -1,34 +1,46 @@
-import express, {Express, Request,Response} from "express"
+import express, { Express, Request, Response } from "express";
+import { sequelize } from "./config/connection";
+import { green, red, SERVICE_NAME, style } from "./utils/terminal-styles";
+import cors from "cors";
+import moviesRouter from "./routes/movies.router";
+import { logger, loggerHttp } from "./utils/logger";
+import swaggerUi from "swagger-ui-express";
+import { specs } from "./config/swagger";
+import helmet from "helmet";
+import { limiter } from "./middleware/rateLimiter.middleware";
 
-import morgan from "morgan"
-import cors from "cors"
-import moviesRoutes from "./routes/movies"
-import { sequelizeConnection } from "./config/db.config"
-import { Movie } from "./models/movies"
+const app: Express = express();
+app.use(express.json());
+app.use(helmet());
+app.use(cors());
+app.use(limiter);
+app.use(loggerHttp);
 
-const app:Express = express()
+// Swagger UI
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
+app.use("/", moviesRouter);
 
+app.get("/health", async (req: Request, res: Response) => {
+  try {
+    await sequelize.authenticate();
 
-sequelizeConnection.addModels([Movie])
+    logger.info(
+      SERVICE_NAME +
+        green(
+          " ✅ Connection with database has been established successfully.",
+        ),
+    );
+  } catch (error) {
+    logger.error(
+      SERVICE_NAME + red(`❌ Unable to connect to the database:`),
+      error,
+    );
+  }
 
-
-app.use(express.json())
-app.use(morgan('dev'))
-app.use(cors())
-app.use("/",moviesRoutes)
-
-
-
-app.get("/health", (req: Request, res: Response) => {
-  res.status(200).send("[Inventory-service] Health check passed!")
-})
-
-
-
-
-
-export default app
-
-
-
+  res.status(200).json({ status: "OK", service: "inventory-app" });
+});
+// ;async () => {
+//   await sequelize.sync()
+// }
+export default app;

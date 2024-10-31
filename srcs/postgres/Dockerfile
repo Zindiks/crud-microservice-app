@@ -1,7 +1,6 @@
-# use Alpina as the base image
+# Use Alpine as the base image
 FROM alpine:3.20
 
-# install required packages
 RUN apk update && \
     apk add --no-cache \
     postgresql \
@@ -11,22 +10,20 @@ RUN apk update && \
     mkdir -p /var/lib/pgsql/16/data /run/postgresql && \
     chown -R postgres:postgres /var/lib/pgsql /run/postgresql
 
-# set environment variable    
+# Set the data directory environment variable
 ENV PGDATA /var/lib/pgsql/16/data
 
-# set port
+# Expose PostgreSQL port
 EXPOSE 5432
 
-# copy the entrypoint script from scripts folder
-COPY scripts/docker-entrypoint.sh /user/local/bin
+# Copy the entrypoint script
+COPY scripts/docker-entrypoint.sh /usr/local/bin/
 
-# change execute permission for script
+# Set the entrypoint script to be executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# run script by default
+# Run the entrypoint script by default
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# start postgres server
+# Start PostgreSQL server
 CMD ["postgres"]
-
-
