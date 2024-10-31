@@ -1,3 +1,16 @@
+
+## play-with-containers
+
+[Assignment link](TASK.md)
+
+
+
+
+architecture:
+![architecture](https://github.com/01-edu/public/raw/master/subjects/devops/play-with-containers/resources/play-with-containers-py.png)
+
+
+
 ### Setup with vagrant
 
 In order to be able to run the project, you need to have the following installed on your machine:
