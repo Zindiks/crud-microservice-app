@@ -1,3 +1,5 @@
+[![Test, Build, and Push Docker Images](https://github.com/Zindiks/crud-microservice-app/actions/workflows/test-build-push.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/test-build-push.yml)
+
 
 ## play-with-containers
 
