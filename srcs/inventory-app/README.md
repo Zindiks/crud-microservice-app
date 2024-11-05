@@ -1,4 +1,4 @@
-# Movies API Service v1
+# Movies API Service
 
 A RESTful API service for managing movie data with TypeScript, Express, and PostgreSQL.
 
