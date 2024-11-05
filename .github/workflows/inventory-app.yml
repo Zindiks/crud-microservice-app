@@ -1,0 +1,82 @@
+name: CI/CD for Inventory App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # 1. Detect Changes for inventory-app
+  detect_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      inventory_app_changed: ${{ steps.check.outputs.inventory_app_changed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check for changes in inventory-app
+        id: check
+        run: |
+          echo "::set-output name=inventory_app_changed::$(git diff --name-only HEAD^ HEAD | grep -q 'srcs/inventory-app' && echo true || echo false)"
+
+  # 2. Test Job for inventory-app
+  inventory_app_test:
+    runs-on: ubuntu-latest
+    needs: detect_changes
+    if: ${{ needs.detect_changes.outputs.inventory_app_changed == 'true' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies and run tests
+        run: |
+          cd srcs/inventory-app
+          npm install
+          npm test
+
+  # 3. Build Docker Image for inventory-app
+  inventory_app_build:
+    runs-on: ubuntu-latest
+    needs: inventory_app_test
+    if: ${{ needs.inventory_app_test.result == 'success' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.USERNAME }}/inventory-app:latest srcs/inventory-app
+          docker save ${{ secrets.USERNAME }}/inventory-app:latest -o inventory-app.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: inventory-app-image
+          path: inventory-app.tar
+
+  # 4. Push Docker Image for inventory-app
+  inventory_app_push:
+    runs-on: ubuntu-latest
+    needs: inventory_app_build
+    if: ${{ needs.inventory_app_build.result == 'success' }}
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: inventory-app-image
+          path: .
+
+      - name: Load Docker image
+        run: docker load -i inventory-app.tar
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.USERNAME }}/inventory-app:latest

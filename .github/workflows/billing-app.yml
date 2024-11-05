@@ -1,0 +1,82 @@
+name: CI/CD for Billing App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # 1. Detect Changes for billing-app
+  detect_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      billing_app_changed: ${{ steps.check.outputs.billing_app_changed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check for changes in billing-app
+        id: check
+        run: |
+          echo "::set-output name=billing_app_changed::$(git diff --name-only HEAD^ HEAD | grep -q 'srcs/billing-app' && echo true || echo false)"
+
+  # 2. Test Job for billing-app
+  billing_app_test:
+    runs-on: ubuntu-latest
+    needs: detect_changes
+    if: ${{ needs.detect_changes.outputs.billing_app_changed == 'true' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies and run tests
+        run: |
+          cd srcs/billing-app
+          npm install
+          npm test
+
+  # 3. Build Docker Image for billing-app
+  billing_app_build:
+    runs-on: ubuntu-latest
+    needs: billing_app_test
+    if: ${{ needs.billing_app_test.result == 'success' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.USERNAME }}/billing-app:latest srcs/billing-app
+          docker save ${{ secrets.USERNAME }}/billing-app:latest -o billing-app.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: billing-app-image
+          path: billing-app.tar
+
+  # 4. Push Docker Image for billing-app
+  billing_app_push:
+    runs-on: ubuntu-latest
+    needs: billing_app_build
+    if: ${{ needs.billing_app_build.result == 'success' }}
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: billing-app-image
+          path: .
+
+      - name: Load Docker image
+        run: docker load -i billing-app.tar
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.USERNAME }}/billing-app:latest
