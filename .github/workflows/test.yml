@@ -1,4 +1,4 @@
-name: Test and Push
+name: Test Workflow
 
 on:
   push:
@@ -14,12 +14,9 @@ jobs:
         app: [billing-app, inventory-app]
 
     steps:
-      # Checkout the code with write permissions
+      # Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: true  # Allows pushing back to the repository
 
       # Set up Node.js
       - name: Set up Node.js
@@ -37,11 +34,3 @@ jobs:
         run: |
           cd srcs/${{ matrix.app }}
           npm test
-
-      # Push changes to main if tests are successful
-      - name: Push changes to main
-        if: success()
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git push origin main
