@@ -1,0 +1,47 @@
+name: Test and Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        app: [billing-app, inventory-app]
+
+    steps:
+      # Checkout the code with write permissions
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true  # Allows pushing back to the repository
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Install dependencies and run tests
+      - name: Install dependencies for ${{ matrix.app }}
+        run: |
+          cd srcs/${{ matrix.app }}
+          npm install
+          
+      - name: Run tests for ${{ matrix.app }}
+        run: |
+          cd srcs/${{ matrix.app }}
+          npm test
+
+      # Push changes to main if tests are successful
+      - name: Push changes to main
+        if: success()
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git push origin main
