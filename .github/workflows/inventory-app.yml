@@ -46,7 +46,28 @@ jobs:
           npm install
           npm test
 
-  # 3. Build Docker Image for inventory-app
+# 3. Code Analysis for inventory-app using CodeQL
+  inventory_app_code_analysis:
+    runs-on: ubuntu-latest
+    needs: inventory_app_test
+    if: ${{ needs.inventory_app_test.result == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'typescript'
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+  # 4. Build Docker Image for inventory-app
   inventory_app_build:
     runs-on: ubuntu-latest
     needs: inventory_app_test
@@ -69,7 +90,7 @@ jobs:
           name: inventory-app-image
           path: inventory-app.tar
 
-  # 4. Push Docker Image for inventory-app
+  # 5. Push Docker Image for inventory-app
   inventory_app_push:
     runs-on: ubuntu-latest
     needs: inventory_app_build
