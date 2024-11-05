@@ -14,11 +14,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 2  # Fetch enough history for diff
 
       - name: Check for changes in inventory-app
         id: check
         run: |
-          echo "::set-output name=inventory_app_changed::$(git diff --name-only HEAD^ HEAD | grep -q 'srcs/inventory-app' && echo true || echo false)"
+          if git diff --name-only HEAD^ HEAD | grep -q "srcs/inventory-app/"; then
+            echo "inventory_app_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "inventory_app_changed=false" >> $GITHUB_OUTPUT
+          fi
 
   # 2. Test Job for inventory-app
   inventory_app_test:
