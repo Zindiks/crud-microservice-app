@@ -1,4 +1,9 @@
-[![Test, Build, and Push Docker Images](https://github.com/Zindiks/crud-microservice-app/actions/workflows/test-build-push.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/test-build-push.yml)
+[![CI/CD for Billing App](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml)
+
+[![CI/CD for Billing App](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml)
+
+
+
 
 
 ## play-with-containers
