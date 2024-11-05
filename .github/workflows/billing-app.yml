@@ -75,14 +75,17 @@ jobs:
     needs: billing_app_build
     if: ${{ needs.billing_app_build.result == 'success' }}
     steps:
-      - name: Download image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: billing-app-image
-          path: .
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Load Docker image
-        run: docker load -i billing-app.tar
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+            docker build -t ${{ secrets.USERNAME }}/billing-app:latest srcs/billing-app
 
       - name: Push Docker image to Docker Hub
-        run: docker push ${{ secrets.USERNAME }}/billing-app:latest
+        run: |
+            docker push ${{ secrets.USERNAME }}/billing-app:latest
+
