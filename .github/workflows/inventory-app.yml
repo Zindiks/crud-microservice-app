@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 2  # Fetch enough history for diff
+          fetch-depth: 2 # Fetch enough history for diff
 
       - name: Check for changes in inventory-app
         id: check
@@ -38,7 +38,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install dependencies and run tests
         run: |
@@ -75,14 +75,16 @@ jobs:
     needs: inventory_app_build
     if: ${{ needs.inventory_app_build.result == 'success' }}
     steps:
-      - name: Download image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: inventory-app-image
-          path: .
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Load Docker image
-        run: docker load -i inventory-app.tar
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.USERNAME }}/inventory-app:latest srcs/inventory-app
 
       - name: Push Docker image to Docker Hub
-        run: docker push ${{ secrets.USERNAME }}/inventory-app:latest
+        run: |
+          docker push ${{ secrets.USERNAME }}/inventory-app:latest
