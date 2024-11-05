@@ -1,7 +1,8 @@
-[![CI/CD for Billing App](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml)
+[![CI/CD for API Gateway](https://github.com/Zindiks/crud-microservice-app/actions/workflows/api-gateway.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/api-gateway.yml)
 
 [![CI/CD for Billing App](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/billing-app.yml)
 
+[![CI/CD for Inventory App](https://github.com/Zindiks/crud-microservice-app/actions/workflows/inventory-app.yml/badge.svg)](https://github.com/Zindiks/crud-microservice-app/actions/workflows/inventory-app.yml)
 
 
 
