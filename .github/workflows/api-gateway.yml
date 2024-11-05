@@ -13,11 +13,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 2  # Important: Fetch at least 2 commits for diff
 
       - name: Check for changes in api-gateway
         id: check
         run: |
-          echo "::set-output name=api_gateway_changed::$(git diff --name-only HEAD^ HEAD | grep -q 'srcs/api-gateway' && echo true || echo false)"
+          if git diff --name-only HEAD^ HEAD | grep -q "srcs/api-gateway/"; then
+            echo "api_gateway_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "api_gateway_changed=false" >> $GITHUB_OUTPUT
+          fi
 
   api_gateway_build_and_push:
     runs-on: ubuntu-latest
