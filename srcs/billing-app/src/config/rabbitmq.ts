@@ -6,8 +6,6 @@ import { Orders } from "../models/orders.models";
 
 const { username, password, port, hostname } = config.rabbitmq;
 
-console.log(hostname);
-console.log(config.rabbitmq);
 
 const QUEUE = "BILLING_QUEUE";
 

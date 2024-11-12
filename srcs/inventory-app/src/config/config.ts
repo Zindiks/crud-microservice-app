@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Log the loaded configuration
 logger.info(
-  `DB URL: http://${process.env.DB_INVENTORY_HOST}:${process.env.DB_INVENTORY_PORT}`,
+  `DB ${process.env.DB_INVENTORY_HOST}:${process.env.DB_INVENTORY_PORT}`,
 );
 logger.info(
   `App Port: http://${process.env.APP_INVENTORY_HOST}:${process.env.APP_INVENTORY_INTERNAL_PORT}`,
